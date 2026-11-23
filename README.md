@@ -14,6 +14,8 @@ This project demonstrates practical backend engineering concepts, including REST
 - Organize code using routers, schemas, services, and dependencies.
 - Interactive API documentation using Swagger UI.
 - Automated API tests using Pytest and FastAPI TestClient.
+- Run in a reproducible Docker container.
+- Run automated tests and publish a container image through GitHub Actions.
 
 ## Tech Stack
 
@@ -23,6 +25,8 @@ This project demonstrates practical backend engineering concepts, including REST
 - Uvicorn
 - Pytest
 - HTTPX
+- Docker
+- GitHub Actions
 
 ## Project Structure
 
@@ -34,13 +38,18 @@ ai-prompt-management-api/
 ├── routers/
 │   └── prompts.py
 ├── schemas/
-│   └── prompt.py
+│   └── prompts.py
 ├── services/
 │   └── prompt_service.py
 ├── tests/
 │   └── test_prompts.py
+├── .github/
+│   └── workflows/
+│       └── ci-cd.yml
 ├── main.py
 ├── requirements.txt
+├── Dockerfile
+├── .dockerignore
 ├── .gitignore
 └── README.md
 ```
@@ -120,6 +129,44 @@ python -m pytest -v
 
 Tests cover API responses, CRUD operations, validation, authentication, missing resources, and test isolation.
 
+## Docker
+
+Build the Docker image:
+
+```bash
+docker build -t ai-prompt-management-api .
+```
+
+Run the container:
+
+```bash
+docker run --rm -p 8000:8000 -e API_KEY="dev-secret-123" ai-prompt-management-api
+```
+
+The API will be available at:
+
+- Swagger UI: http://localhost:8000/docs
+- OpenAPI schema: http://localhost:8000/openapi.json
+
+## CI/CD
+
+The GitHub Actions workflow at [`.github/workflows/ci-cd.yml`](/.github/workflows/ci-cd.yml) runs on pushes and pull requests targeting `main`.
+
+The workflow:
+
+1. Checks out the repository.
+2. Sets up Python 3.12.
+3. Installs dependencies from `requirements.txt`.
+4. Runs the complete Pytest suite.
+5. Sets up Docker Buildx.
+6. Publishes the Docker image to GitHub Container Registry for pushes to `main`.
+
+The published image is:
+
+```text
+ghcr.io/shujahhhub/ai-prompt-management-api:latest
+```
+
 ## Current Limitations
 
 - Uses in-memory storage; data resets when the application restarts.
@@ -131,8 +178,6 @@ Tests cover API responses, CRUD operations, validation, authentication, missing 
 - Integrate SQLite or PostgreSQL for persistent storage.
 - Add user-based authentication and authorization.
 - Add pagination and advanced search.
-- Add Docker support.
-- Implement CI/CD using GitHub Actions.
 - Deploy the API to a cloud platform.
 
 ## Author
